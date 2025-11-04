@@ -6,11 +6,11 @@ public class BallPitchType : MonoBehaviour
     public Rigidbody rb;
 
     // 投球タイプの選択
-    public enum PitchType
+    public enum PitchType// ストレート、フォーク、スライダー
     {
         Straight,
         Fork,
-        Slider // 以前の例のスライダー
+        Slider 
     }
     public PitchType currentPitchType = PitchType.Straight; // インスペクターで選択可能
 
@@ -22,6 +22,13 @@ public class BallPitchType : MonoBehaviour
 
     private int currentPathIndex = 0;
     private Vector3 initialPosition; // 開始位置を保存
+
+    public enum ThrowType
+    {
+        Right,
+        Left
+    }
+    public ThrowType currentThrowType = ThrowType.Right;
 
     void Awake()
     {
@@ -47,6 +54,17 @@ public class BallPitchType : MonoBehaviour
     // キー入力を検出するためにUpdateメソッドを追加
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            currentThrowType = ThrowType.Right;
+            Debug.Log("右投げに変更");
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            currentThrowType |= ThrowType.Left;
+            Debug.Log("左投げに変更");
+        }
+
         // 1キーでストレート
         if (Input.GetKeyDown(KeyCode.Alpha1)) // キーボードの1を押す
         {
@@ -170,15 +188,28 @@ public class BallPitchType : MonoBehaviour
     {
         // --- ここで経路点を定義します ---
         // 最初の数点は直線的に配置
+        if (currentThrowType == ThrowType.Right)
+        {
+            pathPoints.Add(initialPosition + new Vector3(0, 0, 10)); // 1: まっすぐ前方へ10m
+            pathPoints.Add(initialPosition + new Vector3(0, 0, 40)); // 2:
 
-        pathPoints.Add(initialPosition + new Vector3(0, 0, 10)); // 1: まっすぐ前方へ10m
-        pathPoints.Add(initialPosition + new Vector3(0, 0, 40)); // 2:
+
+            pathPoints.Add(initialPosition + new Vector3(-5, 0, 55)); // 3: 
+            pathPoints.Add(initialPosition + new Vector3(-10, 0, 75)); // 3: 
+            pathPoints.Add(initialPosition + new Vector3(-20, 0, 100)); // 5: 
+            pathPoints.Add(initialPosition + new Vector3(-40, 0, 150)); // 5:
+        }
+        else if (currentThrowType == ThrowType.Left) 
+        {
+            pathPoints.Add(initialPosition + new Vector3(0, 0, 10)); // 1: まっすぐ前方へ10m
+            pathPoints.Add(initialPosition + new Vector3(0, 0, 40)); // 2:
 
 
-        pathPoints.Add(initialPosition + new Vector3(-5, 0, 55)); // 3: 
-        pathPoints.Add(initialPosition + new Vector3(-10, 0, 75)); // 3: 
-        pathPoints.Add(initialPosition + new Vector3(-20, 0, 100)); // 5: 
-        pathPoints.Add(initialPosition + new Vector3(-40, 0, 150)); // 5: 
+            pathPoints.Add(initialPosition + new Vector3(5, 0, 55)); // 3: 
+            pathPoints.Add(initialPosition + new Vector3(10, 0, 75)); // 3: 
+            pathPoints.Add(initialPosition + new Vector3(20, 0, 100)); // 5: 
+            pathPoints.Add(initialPosition + new Vector3(40, 0, 150)); // 5:
+        }
     }
     void BallStraight()
     {

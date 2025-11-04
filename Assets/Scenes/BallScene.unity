@@ -300,7 +300,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -390,7 +390,7 @@ GameObject:
   - component: {fileID: 1933051736}
   - component: {fileID: 1933051735}
   - component: {fileID: 1933051740}
-  - component: {fileID: 1933051739}
+  - component: {fileID: 1933051741}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -487,23 +487,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1933051739
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1933051733}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb2f7b550d3a74344b0fa7f85f021eda, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rb: {fileID: 1933051740}
-  currentPitchType: 0
-  targetSpeed: 100
-  forceMagnitude: 50
-  arrivalThreshold: 5
 --- !u!54 &1933051740
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -531,6 +514,64 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1933051741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933051733}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 542a3fb531cf0f646b821abd0edf51a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rb: {fileID: 1933051740}
+  currentPitchType: 0
+  targetSpeed: 120
+  forceMagnitude: 25
+  arrivalThreshold: 2
+  gripButtonAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Grip Button
+      m_Type: 2
+      m_ExpectedControlType: Button
+      m_Id: 4affcec2-e971-4869-88bd-923f736d7663
+      m_Processors: 
+      m_Interactions: Press
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: 9d236b5b-01f0-4e34-8d4a-b58a1abf3e37
+        m_Path: <Keyboard>/1
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Grip Button
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  triggerButtonAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Trigger Button
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 20ac8dbf-a3e9-4458-b60a-30f590f8471c
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: 4139f90f-6bb9-4343-b9e8-e1468abc8bcc
+        m_Path: <Keyboard>/2
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Trigger Button
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  currentThrowType: 0
 --- !u!1 &2002979143
 GameObject:
   m_ObjectHideFlags: 0
