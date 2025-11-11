@@ -442,7 +442,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 594ea882c5a793440b60ff72d896021e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -568,6 +568,26 @@ MonoBehaviour:
         m_Processors: 
         m_Groups: 
         m_Action: Trigger Button
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  launchButtonAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Launch Button
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: a3431d8b-2da9-4887-acb9-f3649360714f
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: 8b570d27-c1f4-40e5-bb5b-30804cfbec98
+        m_Path: <Keyboard>/space
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Launch Button
         m_Flags: 0
       m_Flags: 0
     m_Reference: {fileID: 0}
@@ -772,7 +792,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a9fa87873ad5e3b4fa25633f8f0f20f3, type: 2}
+  - {fileID: 2100000, guid: 15d0c3709176029428a0da2f8cecf0b5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

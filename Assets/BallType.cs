@@ -26,10 +26,17 @@ public class BallType : MonoBehaviour
     private int currentPathIndex = 0;
     private Vector3 initialPosition; // 開始位置を保存
 
-    // --- Input System 用の追加部分 (グリップとトリガー) ---
+    // --- Input System 用の追加部分 ---
     [Header("グリップボタンとトリガーボタンの割り当て")]
     public InputActionProperty gripButtonAction;    // Inspectorでグリップボタンのアクションを割り当てる
     public InputActionProperty triggerButtonAction; // Inspectorでトリガーボタンのアクションを割り当てる
+
+
+    [Header("決定（発射）ボタンの割り当て")]
+    public InputActionProperty launchButtonAction; // Inspectorで決定ボタンのアクションを割り当てる
+
+    private bool isBallLaunched = false; // ボールが発射されたかどうかを追跡するフラグ
+
 
     // 右投げか左投げを変更する
     public enum ThrowType
@@ -67,13 +74,15 @@ public class BallType : MonoBehaviour
         // 各アクションを有効化
         gripButtonAction.action.Enable();
         triggerButtonAction.action.Enable();
+        launchButtonAction.action.Enable();
 
         // performedイベントにハンドラを登録
         // グリップボタンのみ -> ストレート
         gripButtonAction.action.performed += OnGripPerformed;
         // トリガーボタンのみ -> スライダー
         triggerButtonAction.action.performed += OnTriggerPerformed;
-
+        // 決定ボタンのイベントを登録
+        launchButtonAction.action.performed += OnLaunchPerformed;
         // フォーク（グリップとトリガーの両方）はUpdateで検出します
     }
 
@@ -82,28 +91,38 @@ public class BallType : MonoBehaviour
         // イベントハンドラの登録解除
         gripButtonAction.action.performed -= OnGripPerformed;
         triggerButtonAction.action.performed -= OnTriggerPerformed;
+        launchButtonAction.action.performed -= OnLaunchPerformed; // 決定ボタンのイベントを解除
 
         // 各アクションを無効化
         gripButtonAction.action.Disable();
         triggerButtonAction.action.Disable();
+        launchButtonAction.action.Disable();
     }
 
     // --- Input Systemイベントハンドラ ---
     private void OnGripPerformed(InputAction.CallbackContext context)
     {
-        // グリップのみが押されたか、または両方が押されたがトリガーのイベントがまだ来ていないか
-        // このイベントはグリップが押された瞬間に発生。
-        // フォークの条件（両方押し）はUpdateで最終的に判断するため、ここでは保留し、
-        // フォークでなければストレートとして処理。
-        // より正確な同時押し検出のために、Updateで処理を集中させる。
+        // このハンドラは球種切り替えに使うため、ここでは何もしません。
+        // 実際の切り替え処理はUpdateで行われます。
     }
 
     private void OnTriggerPerformed(InputAction.CallbackContext context)
     {
-        // トリガーのみが押されたか、または両方が押されたがグリップのイベントがまだ来ていないか
-        // このイベントはトリガーが押された瞬間に発生。
-        // フォークの条件（両方押し）はUpdateで最終的に判断するため、ここでは保留し、
-        // フォークでなければスライダーとして処理。
+        // このハンドラは球種切り替えに使うため、ここでは何もしません。
+        // 実際の切り替え処理はUpdateで行われます。
+    }
+
+    // 決定ボタンが押されたときに呼び出されるメソッド
+    private void OnLaunchPerformed(InputAction.CallbackContext context)
+    {
+        // ボールがまだ発射されていない場合に発射する
+        if (!isBallLaunched)
+        {
+            Debug.Log("ボールを発射！");
+            isBallLaunched = true;
+
+            rb.isKinematic = false;
+        }
     }
     // --- ここまで Input Systemイベントハンドラ ---
 
@@ -125,17 +144,14 @@ public class BallType : MonoBehaviour
         bool isGripPressed = gripButtonAction.action.IsPressed();
         bool isTriggerPressed = triggerButtonAction.action.IsPressed();
 
-        // フォーク: グリップとトリガーの両方が押された瞬間
-        // performedイベントでは「押された瞬間」しか検出できないため、Updateで両方のボタンの状態を監視し、
-        // かつ、以前の状態との比較で「同時に押された瞬間」を検出する必要がある。
-        // 簡単のために、ここでは「現在両方押されている」状態で、まだ投球タイプが切り替わっていない場合に設定。
-        // ただし、これだと「押しっぱなし」で何度も切り替わる可能性がある。
-        // 実際に切り替えが発生したかを追跡するフラグが必要。
+        // 既にボールが発射されている場合は、球種を変更できないようにする
+        if (isBallLaunched)
+        {
+            return;
+        }
 
-        // フラグを使って、一度切り替えたらボタンが離れるまで再切り替えしないように。
         if (currentPitchType != PitchType.Fork && isGripPressed && isTriggerPressed)
         {
-            // フォークに切り替え（両方押し）
             Debug.Log("フォークに切り替え");
             currentPitchType = PitchType.Fork;
             GeneratePathForPitchType(currentPitchType);
@@ -143,7 +159,6 @@ public class BallType : MonoBehaviour
         }
         else if (currentPitchType != PitchType.Straight && isGripPressed && !isTriggerPressed)
         {
-            // ストレートに切り替え（グリップのみ）
             Debug.Log("ストレートに切り替え");
             currentPitchType = PitchType.Straight;
             GeneratePathForPitchType(currentPitchType);
@@ -151,19 +166,23 @@ public class BallType : MonoBehaviour
         }
         else if (currentPitchType != PitchType.Slider && !isGripPressed && isTriggerPressed)
         {
-            // スライダーに切り替え（トリガーのみ）
             Debug.Log("スライダーに切り替え");
             currentPitchType = PitchType.Slider;
             GeneratePathForPitchType(currentPitchType);
             ResetBall();
         }
-        // ここでは、ボタンが離されたときの処理は特に必要ないが、
-        // 厳密に「押された瞬間」のイベントとして扱いたい場合は、
-        // グリップ/トリガーそれぞれのperformedイベントで条件分岐を行う方が良い。
     }
 
     void FixedUpdate()
     {
+
+        // isBallLaunchedフラグがtrueの場合のみボールを動かす
+        if (!isBallLaunched)
+        {
+            return; // 発射されていなければ何もしない
+        }
+
+
         if (currentPathIndex >= pathPoints.Count)
         {
             return;
@@ -189,6 +208,8 @@ public class BallType : MonoBehaviour
             if (currentPathIndex >= pathPoints.Count)
             {
                 Debug.Log("最終目標点に到達しました！");
+
+                Invoke("ResetBall", 5.0f);
             }
         }
     }
@@ -245,14 +266,19 @@ public class BallType : MonoBehaviour
 
     void ResetBall()
     {
+        rb.isKinematic = true;
         rb.position = initialPosition;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         currentPathIndex = 0;
+
+        isBallLaunched = false; // 発射フラグをリセット
+
         enabled = true;
-        Debug.Log("ボールをリセットし、新しい経路を開始します。");
+        Debug.Log("ボールをリセットし、発射待機状態になります。");
     }
 
+    // （BallSlider, BallStraight, BallFork メソッドは変更ありません）
     void BallSlider()
     {
         // スライダー
@@ -299,14 +325,14 @@ public class BallType : MonoBehaviour
         // 最初は直線的に配置
         pathPoints.Add(initialPosition + new Vector3(0, 0, 5));  // 短い距離で前方へ
         pathPoints.Add(initialPosition + new Vector3(0, 0, 15)); // 更に前方へ
-        pathPoints.Add(initialPosition + new Vector3(0, 0, 25)); 
-        pathPoints.Add(initialPosition + new Vector3(0, 0, 35)); 
+        pathPoints.Add(initialPosition + new Vector3(0, 0, 25));
+        pathPoints.Add(initialPosition + new Vector3(0, 0, 35));
         pathPoints.Add(initialPosition + new Vector3(0, 0, 45));
-        pathPoints.Add(initialPosition + new Vector3(0, 0, 55)); 
-        pathPoints.Add(initialPosition + new Vector3(0, 0, 65)); 
-        pathPoints.Add(initialPosition + new Vector3(0, 0, 75)); 
-        pathPoints.Add(initialPosition + new Vector3(0, 0, 85)); 
-        pathPoints.Add(initialPosition + new Vector3(0, -1, 95)); 
+        pathPoints.Add(initialPosition + new Vector3(0, 0, 55));
+        pathPoints.Add(initialPosition + new Vector3(0, 0, 65));
+        pathPoints.Add(initialPosition + new Vector3(0, 0, 75));
+        pathPoints.Add(initialPosition + new Vector3(0, 0, 85));
+        pathPoints.Add(initialPosition + new Vector3(0, -1, 95));
         pathPoints.Add(initialPosition + new Vector3(0, -2, 105)); // 最終到達点
     }
     void BallFork()
