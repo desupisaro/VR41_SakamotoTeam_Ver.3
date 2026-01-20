@@ -35,6 +35,17 @@ public class BallType : MonoBehaviour
     [Header("決定（発射）ボタンの割り当て")]
     public InputActionProperty launchButtonAction; // Inspectorで決定ボタンのアクションを割り当てる
 
+
+    [Header("リセットボタン割り当て")]
+    public InputActionProperty resetButton;// Inspectorでリセットボタンを割り当てる
+
+
+    [Header("投げ手の変更")]
+    public InputActionProperty leftButtonAction;
+    public InputActionProperty rightButtonAction;
+
+
+
     private bool isBallLaunched = false; // ボールが発射されたかどうかを追跡するフラグ
 
 
@@ -44,7 +55,7 @@ public class BallType : MonoBehaviour
         Right,
         Left
     }
-    [Header("投げる手の変更")]
+    [Header("現在の投げ手")]
     public ThrowType currentThrowType = ThrowType.Right;// インスペクターでも変更可能
 
     void Awake()
@@ -76,6 +87,10 @@ public class BallType : MonoBehaviour
         triggerButtonAction.action.Enable();
         launchButtonAction.action.Enable();
 
+        resetButton.action.Enable();
+        leftButtonAction.action.Enable();
+        rightButtonAction.action.Enable();
+
         // performedイベントにハンドラを登録
         // グリップボタンのみ -> ストレート
         gripButtonAction.action.performed += OnGripPerformed;
@@ -84,6 +99,12 @@ public class BallType : MonoBehaviour
         // 決定ボタンのイベントを登録
         launchButtonAction.action.performed += OnLaunchPerformed;
         // フォーク（グリップとトリガーの両方）はUpdateで検出します
+
+        // リセット
+        resetButton.action.performed += OnReset;
+        leftButtonAction.action.performed += OnLeftThrow;
+        rightButtonAction.action.performed += OnRightThrow;
+        
     }
 
     void OnDisable()
@@ -92,11 +113,18 @@ public class BallType : MonoBehaviour
         gripButtonAction.action.performed -= OnGripPerformed;
         triggerButtonAction.action.performed -= OnTriggerPerformed;
         launchButtonAction.action.performed -= OnLaunchPerformed; // 決定ボタンのイベントを解除
+        resetButton.action.performed -= OnReset;
+        leftButtonAction.action.performed -= OnLeftThrow;
+        rightButtonAction.action.performed -= OnRightThrow;
+
 
         // 各アクションを無効化
         gripButtonAction.action.Disable();
         triggerButtonAction.action.Disable();
         launchButtonAction.action.Disable();
+        resetButton.action.Disable();
+        leftButtonAction.action.Disable();
+        rightButtonAction.action.Disable();
     }
 
     // --- Input Systemイベントハンドラ ---
@@ -124,23 +152,35 @@ public class BallType : MonoBehaviour
             rb.isKinematic = false;
         }
     }
+
+    private void OnReset(InputAction.CallbackContext context) 
+    {
+        ResetBall();
+    }
+
+    private void OnLeftThrow(InputAction.CallbackContext context)
+    {
+        // 発射されている場合変更できなくする
+        if (isBallLaunched)
+        {
+            return;
+        }
+        currentThrowType = ThrowType.Left;
+    }
+    private void OnRightThrow(InputAction.CallbackContext context)
+    {
+        // 発射されている場合変更できなくする
+        if (isBallLaunched)
+        {
+            return;
+        }
+        currentThrowType = ThrowType.Right;
+    }
     // --- ここまで Input Systemイベントハンドラ ---
 
     // 同時押しを検出するためにUpdateを使用
     void Update()
     {
-        // Test用 右投げ左投げ変更
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            currentThrowType = ThrowType.Right;
-            Debug.Log("右投げに変更");
-        }
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            currentThrowType |= ThrowType.Left;
-            Debug.Log("左投げに変更");
-        }
-
         bool isGripPressed = gripButtonAction.action.IsPressed();
         bool isTriggerPressed = triggerButtonAction.action.IsPressed();
 
@@ -155,21 +195,18 @@ public class BallType : MonoBehaviour
             Debug.Log("フォークに切り替え");
             currentPitchType = PitchType.Fork;
             GeneratePathForPitchType(currentPitchType);
-            ResetBall();
         }
         else if (currentPitchType != PitchType.Straight && isGripPressed && !isTriggerPressed)
         {
             Debug.Log("ストレートに切り替え");
             currentPitchType = PitchType.Straight;
             GeneratePathForPitchType(currentPitchType);
-            ResetBall();
         }
         else if (currentPitchType != PitchType.Slider && !isGripPressed && isTriggerPressed)
         {
             Debug.Log("スライダーに切り替え");
             currentPitchType = PitchType.Slider;
             GeneratePathForPitchType(currentPitchType);
-            ResetBall();
         }
     }
 

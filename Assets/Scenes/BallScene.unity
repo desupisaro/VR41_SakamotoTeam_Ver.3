@@ -543,7 +543,7 @@ MonoBehaviour:
       m_SingletonActionBindings:
       - m_Name: 
         m_Id: 9d236b5b-01f0-4e34-8d4a-b58a1abf3e37
-        m_Path: <Keyboard>/1
+        m_Path: <Keyboard>/a
         m_Interactions: 
         m_Processors: 
         m_Groups: 
@@ -563,7 +563,7 @@ MonoBehaviour:
       m_SingletonActionBindings:
       - m_Name: 
         m_Id: 4139f90f-6bb9-4343-b9e8-e1468abc8bcc
-        m_Path: <Keyboard>/2
+        m_Path: <Keyboard>/d
         m_Interactions: 
         m_Processors: 
         m_Groups: 
@@ -588,6 +588,66 @@ MonoBehaviour:
         m_Processors: 
         m_Groups: 
         m_Action: Launch Button
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  resetButton:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Reset Button
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: dd66de30-8f89-4dea-88fe-facddb0c6939
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: e9eb43d1-aaf3-46fa-8478-4083422c830f
+        m_Path: <Keyboard>/r
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Reset Button
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  leftButtonAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Left Button
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 0d90eeae-6d5a-4cbf-961a-a0f3e35dac77
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: 8448d938-65c3-4f4b-bac2-e66415027e6a
+        m_Path: <Keyboard>/leftArrow
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Left Button
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  rightButtonAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Right Button
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 1aafaee7-9927-4ad8-a2ee-55b3e0cb811c
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: 2160d9fe-5ad8-4375-b1cd-d8753fbf6356
+        m_Path: <Keyboard>/rightArrow
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Right Button
         m_Flags: 0
       m_Flags: 0
     m_Reference: {fileID: 0}
