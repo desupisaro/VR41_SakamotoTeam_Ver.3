@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem; // Input Systemを使用するために必要
+using UnityEngine.InputSystem;
 
 public class BallType : MonoBehaviour
 {
@@ -20,6 +20,10 @@ public class BallType : MonoBehaviour
 
     [Header("--球速設定--")]
     public float targetSpeed = 120f;     // 目標とする速度
+    [Header("球速の増減幅")]
+    public int speedSetting = 5;        // 速度の幅
+    [Header("球速の上限")]
+    public int speedLimit = 200;        // 速度上限
     public float forceMagnitude = 25f;  // 目標点へ向かう力の強さ
     public float arrivalThreshold = 2f; // 目標点に到達したとみなす距離
 
@@ -44,6 +48,9 @@ public class BallType : MonoBehaviour
     public InputActionProperty leftButtonAction;
     public InputActionProperty rightButtonAction;
 
+    [Header("球速変更アクション割り当て")]
+    public InputActionProperty speedUpAction;
+    public InputActionProperty speedDownAction;
 
 
     private bool isBallLaunched = false; // ボールが発射されたかどうかを追跡するフラグ
@@ -90,6 +97,8 @@ public class BallType : MonoBehaviour
         resetButton.action.Enable();
         leftButtonAction.action.Enable();
         rightButtonAction.action.Enable();
+        speedUpAction.action.Enable();
+        speedDownAction.action.Enable();
 
         // performedイベントにハンドラを登録
         // グリップボタンのみ -> ストレート
@@ -104,6 +113,9 @@ public class BallType : MonoBehaviour
         resetButton.action.performed += OnReset;
         leftButtonAction.action.performed += OnLeftThrow;
         rightButtonAction.action.performed += OnRightThrow;
+        speedUpAction.action.performed += OnSpeedUpAction;
+        speedDownAction.action.performed += OnSpeedDownAction;
+
         
     }
 
@@ -116,6 +128,8 @@ public class BallType : MonoBehaviour
         resetButton.action.performed -= OnReset;
         leftButtonAction.action.performed -= OnLeftThrow;
         rightButtonAction.action.performed -= OnRightThrow;
+        speedUpAction.action.performed -= OnSpeedUpAction;
+        speedDownAction.action.performed -= OnSpeedDownAction;
 
 
         // 各アクションを無効化
@@ -125,6 +139,8 @@ public class BallType : MonoBehaviour
         resetButton.action.Disable();
         leftButtonAction.action.Disable();
         rightButtonAction.action.Disable();
+        speedUpAction.action.Disable();
+        speedDownAction.action.Disable();
     }
 
     // --- Input Systemイベントハンドラ ---
@@ -176,6 +192,33 @@ public class BallType : MonoBehaviour
         }
         currentThrowType = ThrowType.Right;
     }
+
+    private void OnSpeedUpAction(InputAction.CallbackContext context)
+    {
+        bool isUpPressed = speedUpAction.action.IsPressed();
+        if (targetSpeed < speedLimit && isBallLaunched == false) 
+        {
+            if (isUpPressed)
+            {
+                targetSpeed += speedSetting;
+                Debug.Log(targetSpeed);
+            }
+        }
+    }
+    private void OnSpeedDownAction(InputAction.CallbackContext context)
+    {
+
+        bool isDownPressed = speedDownAction.action.IsPressed();
+        if (targetSpeed > 0 && isBallLaunched == false)
+        {
+            if (isDownPressed)
+            {
+                targetSpeed -= speedSetting;
+                Debug.Log(targetSpeed);
+            }
+        }
+    }
+
     // --- ここまで Input Systemイベントハンドラ ---
 
     // 同時押しを検出するためにUpdateを使用
@@ -184,11 +227,13 @@ public class BallType : MonoBehaviour
         bool isGripPressed = gripButtonAction.action.IsPressed();
         bool isTriggerPressed = triggerButtonAction.action.IsPressed();
 
+
         // 既にボールが発射されている場合は、球種を変更できないようにする
         if (isBallLaunched)
         {
             return;
         }
+
 
         if (currentPitchType != PitchType.Fork && isGripPressed && isTriggerPressed)
         {

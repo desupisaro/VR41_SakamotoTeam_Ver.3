@@ -529,6 +529,8 @@ MonoBehaviour:
   rb: {fileID: 1933051740}
   currentPitchType: 0
   targetSpeed: 120
+  speedSetting: 5
+  speedLimit: 200
   forceMagnitude: 25
   arrivalThreshold: 2
   gripButtonAction:
@@ -648,6 +650,46 @@ MonoBehaviour:
         m_Processors: 
         m_Groups: 
         m_Action: Right Button
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  speedUpAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Speed Up
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: ebbfcd9a-69ee-41da-9fc1-b8a52d323c1a
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: cf3dd3d6-4497-4327-8de0-750cc7dfb86f
+        m_Path: <Keyboard>/upArrow
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Speed Up
+        m_Flags: 0
+      m_Flags: 0
+    m_Reference: {fileID: 0}
+  speedDownAction:
+    m_UseReference: 0
+    m_Action:
+      m_Name: Speed Down
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 5e5dc662-1ef7-4646-9703-2d3ef17fd04a
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings:
+      - m_Name: 
+        m_Id: cb630fec-47ef-4e7c-a319-a609cf696138
+        m_Path: <Keyboard>/downArrow
+        m_Interactions: 
+        m_Processors: 
+        m_Groups: 
+        m_Action: Speed Down
         m_Flags: 0
       m_Flags: 0
     m_Reference: {fileID: 0}
