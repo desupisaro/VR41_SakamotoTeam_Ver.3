@@ -16,9 +16,9 @@ using UnityEngine;
 
 
 //-------------------------------------------------------------------------------------------------
-// class Slide
+// class 
 //-------------------------------------------------------------------------------------------------
-public class Slide : MonoBehaviour
+public class Rotate : MonoBehaviour
 {
     //-------------------------------------------------------------------------------------------------
     // 変数宣言。
@@ -29,8 +29,6 @@ public class Slide : MonoBehaviour
     enum MoveType
     {
         UNMOVE,                     // 動かない。
-        SIDEMOVE,                   // 左右移動。
-        VERTICALMOVE,               // 上下移動。
         GOLDEN_ROTATIONAL_ENERGY,   // 回転。
     }
 
@@ -84,19 +82,11 @@ public class Slide : MonoBehaviour
             case MoveType.UNMOVE:
                 break;
 
-            case MoveType.SIDEMOVE:
-                float sin = Mathf.Sin(Time.time * _sideMoveSpeed);
-                this.transform.localPosition = new Vector3(sin, _pos.y, _pos.z);
-                break;
-
-            case MoveType.VERTICALMOVE:
-                float sinV = Mathf.Sin(Time.time * _verticalMoveSpeed);
-                this.transform.localPosition = new Vector3(_pos.x, sinV + 1, _pos.z);
-                break;
-
             case MoveType.GOLDEN_ROTATIONAL_ENERGY:
-                sin = Mathf.Tan( Time.time );
-                this.transform.localRotation = new Quaternion( _rotate.x, _rotate.y, sin, _rotate.w );
+                sin = Mathf.Tan( Time.time * 2f );
+                this.transform.localRotation = new Quaternion( _rotate.x, _rotate.y, sin + _rotate.z, _rotate.w );
+
+                //this.transform.localPosition = new Vector3(sin + _pos.x, sin + _pos.y, _pos.z);
                 break;
 
             default:
