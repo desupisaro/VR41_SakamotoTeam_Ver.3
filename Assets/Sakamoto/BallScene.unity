@@ -531,7 +531,7 @@ MonoBehaviour:
   targetSpeed: 120
   speedSetting: 5
   speedLimit: 200
-  forceMagnitude: 25
+  forceMagnitude: 10
   arrivalThreshold: 2
   gripButtonAction:
     m_UseReference: 0
@@ -797,8 +797,8 @@ Transform:
   m_GameObject: {fileID: 2002979143}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -7.9, y: 44, z: 226}
-  m_LocalScale: {x: 237.4678, y: 96.78036, z: 87.63866}
+  m_LocalPosition: {x: -7.9, y: 44, z: 286}
+  m_LocalScale: {x: 237.4678, y: 144.85117, z: 87.63866}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -933,7 +933,7 @@ Transform:
   m_GameObject: {fileID: 2007123297}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -14.9, y: -5.2, z: 52.7}
+  m_LocalPosition: {x: -14.9, y: -56, z: 52.7}
   m_LocalScale: {x: 24.300993, y: 9.5843, z: 100.75974}
   m_ConstrainProportionsScale: 0
   m_Children: []
