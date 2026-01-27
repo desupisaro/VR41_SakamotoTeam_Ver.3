@@ -26,6 +26,7 @@ public class TargetIdentifier : MonoBehaviour
         {
             isHitMeasured = true;
             GameManager.Instance.RecordHit(targetName);
+            this.gameObject.SetActive(false);
         }
     }
 
