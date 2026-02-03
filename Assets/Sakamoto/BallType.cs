@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Oculus.Interaction;
+using System.Collections;
 
 public class BallType : MonoBehaviour
 {
@@ -55,6 +57,8 @@ public class BallType : MonoBehaviour
 
     private bool isBallLaunched = false; // ボールが発射されたかどうかを追跡するフラグ
 
+    [SerializeField] private GrabInteractable _grab;
+
 
     // 右投げか左投げを変更する
     public enum ThrowType
@@ -65,8 +69,10 @@ public class BallType : MonoBehaviour
     [Header("現在の投げ手")]
     public ThrowType currentThrowType = ThrowType.Right;// インスペクターでも変更可能
 
-    void Awake()
+    protected void Awake()
     {
+        //base.Awake();
+
         if (rb == null)
         {
             rb = GetComponent<Rigidbody>();
@@ -106,17 +112,17 @@ public class BallType : MonoBehaviour
         // トリガーボタンのみ -> スライダー
         triggerButtonAction.action.performed += OnTriggerPerformed;
         // 決定ボタンのイベントを登録
-        launchButtonAction.action.performed += OnLaunchPerformed;
+        launchButtonAction.action.canceled += OnLaunchPerformed;
         // フォーク（グリップとトリガーの両方）はUpdateで検出します
 
         // リセット
-        resetButton.action.performed += OnReset;
+        resetButton.action.canceled += OnReset;
         leftButtonAction.action.performed += OnLeftThrow;
         rightButtonAction.action.performed += OnRightThrow;
         speedUpAction.action.performed += OnSpeedUpAction;
         speedDownAction.action.performed += OnSpeedDownAction;
 
-        
+        _grab.WhenStateChanged += OnInteractableStateChanged;
     }
 
     void OnDisable()
@@ -124,8 +130,8 @@ public class BallType : MonoBehaviour
         // イベントハンドラの登録解除
         gripButtonAction.action.performed -= OnGripPerformed;
         triggerButtonAction.action.performed -= OnTriggerPerformed;
-        launchButtonAction.action.performed -= OnLaunchPerformed; // 決定ボタンのイベントを解除
-        resetButton.action.performed -= OnReset;
+        launchButtonAction.action.canceled -= OnLaunchPerformed; // 決定ボタンのイベントを解除
+        resetButton.action.canceled -= OnReset;
         leftButtonAction.action.performed -= OnLeftThrow;
         rightButtonAction.action.performed -= OnRightThrow;
         speedUpAction.action.performed -= OnSpeedUpAction;
@@ -141,6 +147,16 @@ public class BallType : MonoBehaviour
         rightButtonAction.action.Disable();
         speedUpAction.action.Disable();
         speedDownAction.action.Disable();
+
+        _grab.WhenStateChanged -= OnInteractableStateChanged;
+    }
+
+    private void OnInteractableStateChanged(InteractableStateChangeArgs args)
+    {
+        if ( args.PreviousState == InteractableState.Select && args.NewState != InteractableState.Select )
+        {
+            StartCoroutine(LaunchBall());
+        }
     }
 
     // --- Input Systemイベントハンドラ ---
@@ -159,13 +175,49 @@ public class BallType : MonoBehaviour
     // 決定ボタンが押されたときに呼び出されるメソッド
     private void OnLaunchPerformed(InputAction.CallbackContext context)
     {
+        //// ボールがまだ発射されていない場合に発射する
+        //if (!isBallLaunched)
+        //{
+        //    Debug.Log("ボールを発射！");
+        //    isBallLaunched = true;
+
+        //    rb.isKinematic = false;
+        //}
+
         // ボールがまだ発射されていない場合に発射する
         if (!isBallLaunched)
         {
-            Debug.Log("ボールを発射！");
-            isBallLaunched = true;
+            //rb.linearVelocity = Vector3.zero;
+            //rb.angularVelocity = Vector3.zero;
 
+            Debug.Log("ボールを発射！");
             rb.isKinematic = false;
+
+            initialPosition = this.transform.position;
+            GeneratePathForPitchType(currentPitchType);
+
+            isBallLaunched = true;
+        }
+    }
+
+    IEnumerator LaunchBall()
+    {
+
+        // ボールがまだ発射されていない場合に発射する
+        yield return new WaitForFixedUpdate();
+
+        if(!isBallLaunched)
+        {
+            //rb.linearVelocity = Vector3.zero;
+            //rb.angularVelocity = Vector3.zero;
+
+            Debug.Log("ボールを発射！");
+            rb.isKinematic = false;
+
+            initialPosition = this.transform.position;
+            GeneratePathForPitchType(currentPitchType);
+
+            isBallLaunched = true;
         }
     }
 
@@ -271,12 +323,16 @@ public class BallType : MonoBehaviour
         }
 
         Vector3 currentTargetPosition = pathPoints[currentPathIndex];
-        Vector3 directionToTarget = (currentTargetPosition - rb.position).normalized;
 
-        Vector3 desiredVelocity = directionToTarget * targetSpeed;
-        Vector3 force = (desiredVelocity - rb.linearVelocity) * forceMagnitude;
+        Vector3 vectorToTarget = currentTargetPosition - rb.position;
+        Vector3 direction = vectorToTarget.normalized;
+        float distance = vectorToTarget.magnitude;
 
-        rb.AddForce(force, ForceMode.Force);
+        Vector3 desiredVelocity = direction * targetSpeed;
+        Vector3 steering = desiredVelocity - rb.linearVelocity;
+
+        rb.AddForce(steering * forceMagnitude * Time.fixedDeltaTime, ForceMode.VelocityChange);
+
 
         if (rb.linearVelocity.magnitude > 0.1f)
         {
