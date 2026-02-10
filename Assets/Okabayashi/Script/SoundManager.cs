@@ -41,7 +41,11 @@ public class SoundManager : MonoBehaviour
             case "TitleScene":
                 PlayBGM(titleBGM);
                 break;
-            case "GameScene":
+            case "Stage01Scene":
+            case "Stage02Scene":
+            case "Stage03Scene":
+            case "Stage04Scene":
+            case "Stage05Scene":
                 PlayBGM(gameBGM);
                 break;
             case "ResultScene":
